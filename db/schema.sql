@@ -12,4 +12,4 @@ PRIMARY KEY (id)
 );
 
 -- Insert into burgers table dynamicly from the submit button from the index.handlebars file
-INSERT INTO burgers (movie) VALUES ('Rush Hour 2');
+INSERT INTO burgers () VALUES ('');
