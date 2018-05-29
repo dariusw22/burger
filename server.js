@@ -1,43 +1,43 @@
 // Dependencies
 var express = require('express');
-var bodyparser = require('body-parser');
-const http = require('http');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 const exphbs = require("express-handlebars");
 
-
-// Create an instance of the express app.
-const app = express();
-
-// Set the port of our application
-// process.env.PORT lets the port be set by Heroku
+// Set the port of the application
 const PORT = process.env.PORT || 8080;
 
-// setting up the connection for the server.
-const server = http.createServer(function(req, res) {
-    res.end("you are connected to your local host Darius " + req.url)
-});
+// Instantiate the express app.
+const app = express();
 
-// making the connection so the server can listen.
-server.listen(PORT, function() {
-    console.log("server is listing on http://localhost:" + PORT)
-})
+// Require routes 
+var routes = require('./routes');
 
-// Set Handlebars as the default templating engine.
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+// Designate the public folder as the static directory 
+app.use(express.static('public'));
+
+// Connect Handlebars to our Express app
+app.engine('handlebars', exphbs({defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-// data array
-const data = [
-    // making the JSON object for the data to live with the perimeters
-    {},
-];
+// Use bodyParser in our app
+app.use(bodyParser.urlencoded({ extend: true }));
+app.use(bodyParser.json());
 
-//Routes
-app.get('/data/:name', (req, res) => {
-    for (let i = 0; i < data.length; i++) {
-        return res.render("data", data[i]);
-    }
+// Have every request go through our route middleware
+app.use(routes);
+
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+// Connect to the Mongo DB
+mongoose.connect(MONGODB_URI);
+
+// Listen on the port
+app.listen(PORT, function () {
+    console.log("Listening on port: " + PORT);
 });
+
 
 
 
